@@ -1,0 +1,5 @@
+com/game/snake/app/App.class
+com/game/snake/ui/GamePanel.class
+com/game/snake/entities/Food.class
+com/game/snake/entities/Snake.class
+com/game/snake/ui/Game.class
