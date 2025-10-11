@@ -20,7 +20,7 @@ public class SpeedController {
     public void onFruitEaten() {
         fruitsEaten++;
         if (fruitsEaten % fruitsPerStep == 0) {
-            currentTps = Math.min(maxTps, currentTps + stepTps);
+            currentTps = Math.min(maxTps, baseTps + (fruitsEaten / fruitsPerStep) * stepTps);
         }
     }
 
