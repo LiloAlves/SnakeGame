@@ -5,6 +5,8 @@ import com.game.snake.entities.Food;
 import com.game.snake.entities.Snake;
 
 public class GameEngine {
+    private static final int HUD_HEIGHT = 30;
+
     private final int width;
     private final int height;
     private final int blockSize;
@@ -12,6 +14,7 @@ public class GameEngine {
     private Snake snake;
     private Food food;
     private boolean gameOver;
+    private boolean paused = false;
 
     public GameEngine(int width, int height, int blockSize, Color snakeColor) {
         this.width = width;
@@ -21,8 +24,12 @@ public class GameEngine {
         reset(snakeColor);
     }
 
+    private int playableHeight() {
+        return height - HUD_HEIGHT;
+    }
+
     public void update() {
-        if (gameOver)
+        if (gameOver || paused)
             return;
 
         if (snakeStarted()) {
@@ -30,7 +37,7 @@ public class GameEngine {
 
             if (snake.checkCollision(food.getPosition())) {
                 snake.grow();
-                food.generateNewPosition(width, height, blockSize);
+                food.generateNewPosition(width, playableHeight(), blockSize);
                 speed.onFruitEaten();
             }
 
@@ -41,17 +48,35 @@ public class GameEngine {
     }
 
     public void render(Graphics g) {
-        food.draw(g, blockSize);
-        snake.draw(g, blockSize);
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        drawHud(g2);
+        g2.translate(0, HUD_HEIGHT);
+        food.draw(g2, blockSize);
+        snake.draw(g2, blockSize);
+
+        g2.dispose();
+    }
+
+    private void drawHud(Graphics2D g) {
+
+        g.setColor(new Color(255, 255, 255, 60));
+        g.fillRect(0, 0, width, HUD_HEIGHT);
+
+        g.setFont(new Font("DialogInput", Font.BOLD, 16));
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 16));
+
         g.drawString("Score: " + getScore() + "      TPS: " + speed.getTps(), 10, 20);
+        g.getFontMetrics();
+
     }
 
     public void reset(Color snakeColor) {
         this.snake = new Snake(5, 5, snakeColor);
-        this.food = new Food(width, height, blockSize);
+        this.food = new Food(width, playableHeight(), blockSize);
         this.gameOver = false;
+        this.paused = false;
+        speed.reset();
     }
 
     private boolean checkSelfCollision() {
@@ -65,7 +90,7 @@ public class GameEngine {
     }
 
     private boolean snakeOutOfBounds() {
-        return snake.outOfBounds(width, height, blockSize);
+        return snake.outOfBounds(width, playableHeight(), blockSize);
     }
 
     private boolean snakeStarted() {
@@ -84,8 +109,19 @@ public class GameEngine {
         return gameOver;
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void togglePause() {
+        if (!gameOver) {
+            paused = !paused;
+        }
+    }
+
     public void restart(Color snakeColor) {
         reset(snakeColor);
+        paused = false;
     }
 
     public void setDirection(int dx, int dy) {

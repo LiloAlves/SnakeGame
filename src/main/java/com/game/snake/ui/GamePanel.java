@@ -44,23 +44,63 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         if (!engine.isGameOver()) {
             engine.render(g);
+
+            if (engine.isPaused()) { // [NEW] overlay de pausa na UI
+                drawPausedOverlay(g);
+            }
         } else {
             drawGameOverScreen(g);
         }
     }
 
     private void drawGameOverScreen(Graphics g) {
-        g.setColor(Color.RED);
-        g.setFont(new Font("Arial", Font.BOLD, 30));
-        String gameOverMessage = "Game Over";
-        String finalScoreMessage = "Final Score: " + engine.getScore();
+
+        String gameOverMessage = "GAME OVER";
+
+        g.setFont(new Font("Monospaced", Font.BOLD, 70));
         FontMetrics fm = g.getFontMetrics();
 
         int x = (width - fm.stringWidth(gameOverMessage)) / 2;
-        int y = height / 2 - 20;
+        int y = height / 2 - 30;
+
+        g.setColor(Color.GREEN);
+        g.drawString(gameOverMessage, x + 2, y + 2);
+
+        g.setColor(Color.RED);
         g.drawString(gameOverMessage, x, y);
-        x = (width - fm.stringWidth(finalScoreMessage)) / 2;
-        g.drawString(finalScoreMessage, x, y + 40);
+
+        g.setColor(new Color(0, 255, 0));
+        g.drawString(gameOverMessage, x - 1, y - 1);
+
+        String finalScoreMessage = "Final Score: " + engine.getScore();
+
+        g.setFont(new Font("Monospaced", Font.PLAIN, 20));
+        FontMetrics fmScore = g.getFontMetrics();
+
+        x = (width - fmScore.stringWidth(finalScoreMessage)) / 2;
+
+        g.setColor(Color.WHITE);
+        g.drawString(finalScoreMessage, x, y + 60);
+    }
+
+    private void drawPausedOverlay(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        g2.setColor(new Color(0, 0, 0, 120)); // véu translúcido
+        g2.fillRect(0, 0, width, height);
+
+        String txt = "PAUSED";
+        g2.setFont(new Font("Monospaced", Font.BOLD, 48));
+        FontMetrics fm = g2.getFontMetrics();
+        int x = (width - fm.stringWidth(txt)) / 2;
+        int y = (height - fm.getHeight()) / 2 + fm.getAscent();
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(txt, x + 3, y + 3);
+        g2.setColor(Color.WHITE);
+        g2.drawString(txt, x, y);
+
+        g2.dispose();
     }
 
     @Override
@@ -87,6 +127,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             case KeyEvent.VK_DOWN -> engine.setDirection(0, 1);
             case KeyEvent.VK_LEFT -> engine.setDirection(-1, 0);
             case KeyEvent.VK_RIGHT -> engine.setDirection(1, 0);
+
+            case KeyEvent.VK_SPACE -> {
+                engine.togglePause();
+                if (engine.isPaused())
+                    timer.stop();
+                else
+                    timer.start();
+                repaint();
+            }
+            case KeyEvent.VK_R -> {
+                restartGame();
+            }
         }
     }
 
