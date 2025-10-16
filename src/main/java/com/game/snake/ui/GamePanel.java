@@ -7,6 +7,7 @@ import javax.swing.*;
 import com.game.snake.core.GameEngine;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
+    private static final int HUD_HEIGHT = 30;
     private final int width;
     private final int height;
     private final int blockSize = 25;
@@ -14,6 +15,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private GameEngine engine;
     private Timer timer;
     private JButton restartButton;
+    private JButton pausedButton;
     private Color snakeColor;
 
     public GamePanel(int width, int height, Color snakeColor, Game game) {
@@ -28,24 +30,49 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         addKeyListener(this);
 
-        timer = new Timer(engine.getDelayMs(), this);
-        timer.start();
+        setLayout(new BorderLayout());
+
+        JPanel hudPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+        hudPanel.setOpaque(false);
+        hudPanel.setPreferredSize(new Dimension(1, HUD_HEIGHT));
+        add(hudPanel, BorderLayout.NORTH);
+
+        pausedButton = new JButton("⏯");
+        pausedButton.setToolTipText("Pause/Resume (Space)");
+        pausedButton.setFocusable(false);
+        pausedButton.setFont(new Font("Dialog", Font.BOLD, 16));
+
+        pausedButton.setForeground(Color.WHITE);
+        pausedButton.setBorderPainted(false);
+        pausedButton.addActionListener(e -> {
+            engine.togglePause();
+            if (engine.isPaused())
+                timer.stop();
+            else
+                timer.start();
+            repaint();
+        });
+        hudPanel.add(pausedButton);
 
         restartButton = new JButton("Restart");
         restartButton.setFocusable(false);
         restartButton.addActionListener(e -> restartGame());
-        setLayout(new BorderLayout());
         add(restartButton, BorderLayout.SOUTH);
+
+        timer = new Timer(engine.getDelayMs(), this);
+        timer.start();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        pausedButton.setVisible(!engine.isGameOver());
+
         if (!engine.isGameOver()) {
             engine.render(g);
 
-            if (engine.isPaused()) { // [NEW] overlay de pausa na UI
+            if (engine.isPaused()) {
                 drawPausedOverlay(g);
             }
         } else {
@@ -86,18 +113,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private void drawPausedOverlay(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
 
-        g2.setColor(new Color(0, 0, 0, 120)); // véu translúcido
+        g2.setColor(new Color(0, 0, 0, 120));
         g2.fillRect(0, 0, width, height);
 
         String txt = "PAUSED";
-        g2.setFont(new Font("Monospaced", Font.BOLD, 48));
+        g2.setFont(new Font("Monospaced", Font.BOLD, 35));
         FontMetrics fm = g2.getFontMetrics();
         int x = (width - fm.stringWidth(txt)) / 2;
         int y = (height - fm.getHeight()) / 2 + fm.getAscent();
 
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.RED);
         g2.drawString(txt, x + 3, y + 3);
-        g2.setColor(Color.WHITE);
+        g2.setColor(Color.GREEN);
         g2.drawString(txt, x, y);
 
         g2.dispose();
@@ -116,6 +143,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         engine.restart(snakeColor);
         timer.setDelay(engine.getDelayMs());
         timer.restart();
+        pausedButton.setVisible(true);
         requestFocus();
         repaint();
     }

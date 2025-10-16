@@ -1,4 +1,11 @@
 {
   "java.project.sourcePaths": ["src/main/java"],
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "/Users/lilosouza/.sdkman/candidates/java/jdk-17",
+      "default": true
+    }
+  ]
 }
