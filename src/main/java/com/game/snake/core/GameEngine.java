@@ -66,7 +66,7 @@ public class GameEngine {
         g.setFont(new Font("DialogInput", Font.BOLD, 16));
         g.setColor(Color.WHITE);
 
-        g.drawString("Score: " + getScore() + "      TPS: " + speed.getTps(), 10, 20);
+        g.drawString("Score: " + getScore() + "    TPS: " + speed.getTps(), 10, 20);
         g.getFontMetrics();
 
     }
