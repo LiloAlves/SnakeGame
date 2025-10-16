@@ -56,10 +56,83 @@ public class Snake {
     }
 
     public void draw(Graphics g, int blockSize) {
-        g.setColor(color);
-        for (Point part : body) {
-            g.fill3DRect(part.x * blockSize, part.y * blockSize, blockSize, blockSize, true);
+        Graphics2D g2 = (Graphics2D) g;
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (int i = 0; i < body.size(); i++) {
+            Point p = body.get(i);
+
+            if (i == 0) {
+                g2.setColor(color);
+            } else {
+                int alpha = Math.max(60, 200 - i * 10);
+                Color faded = new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, alpha));
+                g2.setColor(faded);
+            }
+
+            g2.fillRoundRect(p.x * blockSize, p.y * blockSize, blockSize, blockSize, 8, 8);
+
+            if (i == 0) {
+                drawEyes(g2, p, blockSize);
+            }
+
         }
+    }
+
+    private void drawEyes(Graphics2D g, Point head, int blockSize) {
+        int x = head.x * blockSize;
+        int y = head.y * blockSize;
+
+        int eyeSize = Math.max(4, blockSize / 4);
+        int pupilSize = Math.max(3, eyeSize / 1);
+        int offset = Math.max(2, blockSize / 4);
+
+        int leftX = x + offset;
+        int rightX = x + blockSize - offset - eyeSize;
+        int topY = y + offset;
+        int bottomY = y + blockSize - offset - eyeSize;
+
+        int leftEyeX, leftEyeY, rightEyeX, rightEyeY;
+        int pupilOffsetX = 0, pupilOffsetY = 0;
+
+        if (velocityX > 0) {
+            leftEyeX = rightX;
+            rightEyeX = rightX;
+            leftEyeY = topY;
+            rightEyeY = bottomY;
+            pupilOffsetX = pupilSize / 3;
+        } else if (velocityX < 0) {
+            leftEyeX = leftX;
+            rightEyeX = leftX;
+            leftEyeY = topY;
+            rightEyeY = bottomY;
+            pupilOffsetX = -pupilSize / 3;
+        } else if (velocityY > 0) {
+            leftEyeX = leftX;
+            rightEyeX = rightX;
+            leftEyeY = bottomY;
+            rightEyeY = bottomY;
+            pupilOffsetY = pupilSize / 3;
+        } else {
+            leftEyeX = leftX;
+            rightEyeX = rightX;
+            leftEyeY = topY;
+            rightEyeY = topY;
+            pupilOffsetY = -pupilSize / 3;
+        }
+
+        g.setColor(new Color(255, 255, 255));
+        g.fillOval(leftEyeX, leftEyeY, eyeSize, eyeSize);
+        g.fillOval(rightEyeX, rightEyeY, eyeSize, eyeSize);
+
+        g.setColor(Color.BLACK);
+        g.fillOval(leftEyeX + eyeSize / 2 - pupilSize / 2 + pupilOffsetX,
+                leftEyeY + eyeSize / 2 - pupilSize / 2 + pupilOffsetY,
+                pupilSize, pupilSize);
+        g.fillOval(rightEyeX + eyeSize / 2 - pupilSize / 2 + pupilOffsetX,
+                rightEyeY + eyeSize / 2 - pupilSize / 2 + pupilOffsetY,
+                pupilSize, pupilSize);
     }
 
     public boolean outOfBounds(int width, int height, int blockSize) {
