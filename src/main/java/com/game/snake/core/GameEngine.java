@@ -60,10 +60,10 @@ public class GameEngine {
 
     private void drawHud(Graphics2D g) {
 
-        g.setColor(new Color(255, 255, 255, 60));
+        g.setColor(new Color(255, 255, 255, 50));
         g.fillRect(0, 0, width, HUD_HEIGHT);
 
-        g.setFont(new Font("DialogInput", Font.BOLD, 16));
+        g.setFont(new Font("DialogInput", Font.BOLD, 13));
         g.setColor(Color.WHITE);
 
         g.drawString("Score: " + getScore() + "    TPS: " + speed.getTps(), 10, 20);
