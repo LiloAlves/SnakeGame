@@ -37,11 +37,14 @@ public class GameEngine {
 
             if (snake.checkCollision(food.getPosition())) {
                 snake.grow();
-                food.generateNewPosition(width, playableHeight(), blockSize);
                 speed.onFruitEaten();
+                SoundPlayer.play("eat.wav");
+                food.generateNewPosition(width, playableHeight(), blockSize);
+
             }
 
             if (snakeOutOfBounds() || checkSelfCollision()) {
+                SoundPlayer.play("gameover.wav");
                 gameOver = true;
             }
         }
