@@ -5,9 +5,10 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import com.game.snake.core.GameEngine;
+import com.game.snake.core.SoundPlayer;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
-    private static final int HUD_HEIGHT = 30;
+    private static final int HUD_HEIGHT = 34;
     private final int width;
     private final int height;
     private final int blockSize = 25;
@@ -16,6 +17,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private JButton restartButton;
     private JButton pausedButton;
+    private boolean soundOn = true;
+    private JButton soundButton;
     private Color snakeColor;
 
     public GamePanel(int width, int height, Color snakeColor, Game game) {
@@ -32,18 +35,27 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         setLayout(new BorderLayout());
 
-        JPanel hudPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+        JPanel hudPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 1, 2));
         hudPanel.setOpaque(false);
         hudPanel.setPreferredSize(new Dimension(1, HUD_HEIGHT));
         add(hudPanel, BorderLayout.NORTH);
+
+        soundButton = new JButton();
+        soundButton.setFocusable(false);
+        soundButton.setFont(new Font("Dialog", Font.BOLD, 16));
+        soundButton.setForeground(Color.WHITE);
+        soundButton.setOpaque(false);
+        soundButton.setBorderPainted(false);
+        updateSoundButtonUI();
+        soundButton.addActionListener(e -> toggleSound());
+        hudPanel.add(soundButton);
 
         pausedButton = new JButton("⏯");
         pausedButton.setToolTipText("Pause/Resume (Space)");
         pausedButton.setFocusable(false);
         pausedButton.setFont(new Font("Dialog", Font.BOLD, 16));
+        pausedButton.setForeground(Color.BLACK);
 
-        pausedButton.setForeground(Color.WHITE);
-        pausedButton.setBorderPainted(false);
         pausedButton.addActionListener(e -> {
             engine.togglePause();
             if (engine.isPaused())
@@ -63,11 +75,19 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         timer.start();
     }
 
+    private void toggleSound() {
+        soundOn = !soundOn;
+        SoundPlayer.setMuted(!soundOn);
+        updateSoundButtonUI();
+        requestFocusInWindow();
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         pausedButton.setVisible(!engine.isGameOver());
+        soundButton.setVisible(!engine.isGameOver());
 
         if (!engine.isGameOver()) {
             engine.render(g);
@@ -77,6 +97,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         } else {
             drawGameOverScreen(g);
+        }
+    }
+
+    private void updateSoundButtonUI() {
+        if (soundOn) {
+            soundButton.setText("🔊");
+            soundButton.setToolTipText("Desligar som");
+        } else {
+            soundButton.setText("🔇");
+            soundButton.setToolTipText("Ligar som");
         }
     }
 
@@ -90,10 +120,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         int x = (width - fm.stringWidth(gameOverMessage)) / 2;
         int y = height / 2 - 30;
 
-        g.setColor(Color.GREEN);
+        g.setColor(Color.RED);
         g.drawString(gameOverMessage, x + 2, y + 2);
 
-        g.setColor(Color.RED);
+        g.setColor(Color.GREEN);
         g.drawString(gameOverMessage, x, y);
 
         g.setColor(new Color(0, 255, 0));
@@ -144,6 +174,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         timer.setDelay(engine.getDelayMs());
         timer.restart();
         pausedButton.setVisible(true);
+        soundButton.setVisible(true);
         requestFocus();
         repaint();
     }
