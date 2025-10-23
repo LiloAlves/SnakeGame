@@ -2,7 +2,6 @@ package com.game.snake.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import com.game.snake.ui.Game;
 
 public class MenuPanel extends JPanel {
 
@@ -26,25 +25,24 @@ public class MenuPanel extends JPanel {
 
         startButton.setBounds((width - 180) / 2, (height / 2) + 10, 180, 40);
 
-        startButton.setBackground(Color.LIGHT_GRAY);
+        startButton.setBackground(Color.WHITE);
         startButton.setForeground(Color.BLACK);
 
         startButton.setOpaque(true);
         startButton.setContentAreaFilled(true);
         startButton.setFocusPainted(false);
 
-        startButton.setBorderPainted(true);
-        startButton.setBorder(new javax.swing.border.LineBorder(Color.WHITE, 1, true)); // cantos arredondados
+        startButton.setBorder(new javax.swing.border.LineBorder(Color.black));
 
         startButton.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                startButton.setBackground(new Color(230, 230, 230)); // leve cinza
+                startButton.setBackground(new Color(200, 200, 200, 250));
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                startButton.setBackground(Color.LIGHT_GRAY); // volta ao branco
+                startButton.setBackground(Color.WHITE);
             }
         });
 
@@ -58,8 +56,9 @@ public class MenuPanel extends JPanel {
                 • R: restart
                 • Eat 5 fruits: +2 TPS (speed)
                 """);
+
         help.setEditable(false);
-        help.setForeground(Color.WHITE);
+        help.setForeground(Color.DARK_GRAY);
         help.setBackground(new Color(0, 0, 0, 0));
         help.setFont(new Font("Monospaced", Font.PLAIN, 14));
         help.setBounds(20, height - 120, width - 40, 100);
