@@ -1,20 +1,26 @@
 package com.game.snake.core;
 
 import java.awt.*;
+import java.util.*;
+
 import com.game.snake.entities.Food;
 import com.game.snake.entities.Snake;
+import com.game.snake.entities.Obstacle;
 
 public class GameEngine {
-    private static final int HUD_HEIGHT = 30;
-
     private final int width;
     private final int height;
     private final int blockSize;
     private final SpeedController speed;
+
     private Snake snake;
     private Food food;
     private boolean gameOver;
     private boolean paused = false;
+
+    private final Random random = new Random();
+    private final java.util.List<Obstacle> obstacles = new ArrayList<>();
+    private int fruitsEatenCounter = 0;
 
     public GameEngine(int width, int height, int blockSize, Color snakeColor) {
         this.width = width;
@@ -25,7 +31,7 @@ public class GameEngine {
     }
 
     private int playableHeight() {
-        return height - HUD_HEIGHT;
+        return height - UiConstants.HUD_HEIGHT;
     }
 
     public void update() {
@@ -38,23 +44,75 @@ public class GameEngine {
             if (snake.checkCollision(food.getPosition())) {
                 snake.grow();
                 speed.onFruitEaten();
+                fruitsEatenCounter++;
                 SoundPlayer.play("eat.wav");
+
+                if (fruitsEatenCounter % 5 == 0) {
+                    addRandomObstacle();
+                }
+
                 food.generateNewPosition(width, playableHeight(), blockSize);
 
             }
 
-            if (snakeOutOfBounds() || checkSelfCollision()) {
+            if (snakeOutOfBounds() || checkSelfCollision() || hitObstacle()) {
                 SoundPlayer.play("gameover.wav");
                 gameOver = true;
             }
         }
     }
 
+    private boolean hitObstacle() {
+        Point head = snake.getHead();
+        for (Obstacle o : obstacles) {
+            if (head.equals(o.getPosition()))
+                return true;
+        }
+        return false;
+    }
+
+    private void addRandomObstacle() {
+
+        for (int attempt = 0; attempt < 200; attempt++) {
+            int maxX = width / blockSize;
+            int maxY = playableHeight() / blockSize;
+            int pointX = random.nextInt(Math.max(1, maxX));
+            int pointY = random.nextInt(Math.max(1, maxY));
+            Point points = new Point(pointX, pointY);
+
+            if (isFreeCell(points)) {
+                obstacles.add(new Obstacle(points));
+                return;
+            }
+        }
+    }
+
+    private boolean isFreeCell(Point points) {
+        if (points.equals(food.getPosition()))
+            return false;
+
+        for (Point part : snake.getBody()) {
+            if (points.equals(part))
+                return false;
+        }
+
+        for (Obstacle o : obstacles) {
+            if (points.equals(o.getPosition()))
+                return false;
+        }
+        return true;
+    }
+
     public void render(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
 
         drawHud(g2);
-        g2.translate(0, HUD_HEIGHT);
+        g2.translate(0, UiConstants.HUD_HEIGHT);
+
+        for (Obstacle o : obstacles) {
+            o.draw(g2, blockSize);
+        }
+
         food.draw(g2, blockSize);
         snake.draw(g2, blockSize);
 
@@ -62,15 +120,13 @@ public class GameEngine {
     }
 
     private void drawHud(Graphics2D g) {
-
         g.setColor(new Color(255, 255, 255, 50));
-        g.fillRect(0, 0, width, HUD_HEIGHT);
+        g.fillRect(0, 0, width, UiConstants.HUD_HEIGHT);
 
         g.setFont(new Font("DialogInput", Font.BOLD, 13));
         g.setColor(Color.WHITE);
 
         g.drawString("Score: " + getScore() + "    TPS: " + speed.getTps(), 10, 20);
-        g.getFontMetrics();
 
     }
 
@@ -79,6 +135,8 @@ public class GameEngine {
         this.food = new Food(width, playableHeight(), blockSize);
         this.gameOver = false;
         this.paused = false;
+        this.obstacles.clear();
+        this.fruitsEatenCounter = 0;
         speed.reset();
     }
 
@@ -127,7 +185,7 @@ public class GameEngine {
         paused = false;
     }
 
-    public void setDirection(int dx, int dy) {
-        snake.setDirection(dx, dy);
+    public void setDirection(int directionX, int directionY) {
+        snake.setDirection(directionX, directionY);
     }
 }

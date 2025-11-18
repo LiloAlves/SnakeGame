@@ -3,10 +3,18 @@ package com.game.snake.entities;
 import java.awt.*;
 import java.util.ArrayList;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
+@Getter
 public class Snake {
+
     private ArrayList<Point> body;
     private int velocityX, velocityY;
     private Color color;
+    private java.util.List<Color> colors;
+
+    @Getter(AccessLevel.NONE)
     private boolean growing = false;
 
     public Snake(int startX, int startY, Color color) {
@@ -51,6 +59,7 @@ public class Snake {
                 (this.velocityY != 0 && velocityY == -this.velocityY)) {
             return;
         }
+
         this.velocityX = velocityX;
         this.velocityY = velocityY;
     }
@@ -81,17 +90,17 @@ public class Snake {
     }
 
     private void drawEyes(Graphics2D g, Point head, int blockSize) {
-        int x = head.x * blockSize;
-        int y = head.y * blockSize;
+        int headx = head.x * blockSize;
+        int heady = head.y * blockSize;
 
         int eyeSize = Math.max(4, blockSize / 4);
-        int pupilSize = Math.max(3, eyeSize / 1);
+        int pupilSize = Math.max(3, eyeSize / 2);
         int offset = Math.max(2, blockSize / 4);
 
-        int leftX = x + offset;
-        int rightX = x + blockSize - offset - eyeSize;
-        int topY = y + offset;
-        int bottomY = y + blockSize - offset - eyeSize;
+        int leftX = headx + offset;
+        int rightX = headx + blockSize - offset - eyeSize;
+        int topY = heady + offset;
+        int bottomY = heady + blockSize - offset - eyeSize;
 
         int leftEyeX, leftEyeY, rightEyeX, rightEyeY;
         int pupilOffsetX = 0, pupilOffsetY = 0;
@@ -138,21 +147,5 @@ public class Snake {
     public boolean outOfBounds(int width, int height, int blockSize) {
         Point head = getHead();
         return head.x < 0 || head.x >= width / blockSize || head.y < 0 || head.y >= height / blockSize;
-    }
-
-    public int getVelocityX() {
-        return velocityX;
-    }
-
-    public int getVelocityY() {
-        return velocityY;
-    }
-
-    public ArrayList<Point> getBody() {
-        return body;
-    }
-
-    public Color getColor() {
-        return color;
     }
 }
