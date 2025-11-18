@@ -6,20 +6,21 @@ import javax.swing.*;
 
 import com.game.snake.core.GameEngine;
 import com.game.snake.core.SoundPlayer;
+import com.game.snake.core.UiConstants;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
-    private static final int HUD_HEIGHT = 34;
     private final int width;
     private final int height;
     private final int blockSize = 25;
 
     private GameEngine engine;
     private Timer timer;
+    private boolean soundOn = true;
+    private Color snakeColor;
+
     private JButton restartButton;
     private JButton pausedButton;
-    private boolean soundOn = true;
     private JButton soundButton;
-    private Color snakeColor;
 
     public GamePanel(int width, int height, Color snakeColor, Game game) {
         this.width = width;
@@ -28,7 +29,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         this.engine = new GameEngine(width, height, blockSize, snakeColor);
 
-        setPreferredSize(new Dimension(width, height + 25));
+        setPreferredSize(new Dimension(width, height + UiConstants.HUD_HEIGHT));
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
@@ -37,7 +38,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         JPanel hudPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 1, 2));
         hudPanel.setOpaque(false);
-        hudPanel.setPreferredSize(new Dimension(1, HUD_HEIGHT));
+        hudPanel.setPreferredSize(new Dimension(1, UiConstants.HUD_HEIGHT));
         add(hudPanel, BorderLayout.NORTH);
 
         soundButton = new JButton();
@@ -117,27 +118,24 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         g.setFont(new Font("Monospaced", Font.BOLD, 70));
         FontMetrics fm = g.getFontMetrics();
 
-        int x = (width - fm.stringWidth(gameOverMessage)) / 2;
-        int y = height / 2 - 30;
-
-        g.setColor(Color.RED);
-        g.drawString(gameOverMessage, x + 2, y + 2);
+        int widthX = (width - fm.stringWidth(gameOverMessage)) / 2;
+        int heighty = height / 2 - 30;
 
         g.setColor(Color.GREEN);
-        g.drawString(gameOverMessage, x, y);
+        g.drawString(gameOverMessage, widthX + 2, heighty + 2);
 
-        g.setColor(new Color(0, 255, 0));
-        g.drawString(gameOverMessage, x - 1, y - 1);
+        g.setColor(Color.RED);
+        g.drawString(gameOverMessage, widthX, heighty);
 
         String finalScoreMessage = "Final Score: " + engine.getScore();
 
         g.setFont(new Font("Monospaced", Font.PLAIN, 20));
         FontMetrics fmScore = g.getFontMetrics();
 
-        x = (width - fmScore.stringWidth(finalScoreMessage)) / 2;
+        widthX = (width - fmScore.stringWidth(finalScoreMessage)) / 2;
 
         g.setColor(Color.WHITE);
-        g.drawString(finalScoreMessage, x, y + 60);
+        g.drawString(finalScoreMessage, widthX, heighty + 60);
     }
 
     private void drawPausedOverlay(Graphics g) {
@@ -149,13 +147,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         String txt = "PAUSED";
         g2.setFont(new Font("Monospaced", Font.BOLD, 35));
         FontMetrics fm = g2.getFontMetrics();
-        int x = (width - fm.stringWidth(txt)) / 2;
-        int y = (height - fm.getHeight()) / 2 + fm.getAscent();
+        int widthX = (width - fm.stringWidth(txt)) / 2;
+        int heighty = (height - fm.getHeight()) / 2 + fm.getAscent();
 
         g2.setColor(Color.RED);
-        g2.drawString(txt, x + 3, y + 3);
+        g2.drawString(txt, widthX + 3, heighty + 3);
         g2.setColor(Color.GREEN);
-        g2.drawString(txt, x, y);
+        g2.drawString(txt, widthX, heighty);
 
         g2.dispose();
     }

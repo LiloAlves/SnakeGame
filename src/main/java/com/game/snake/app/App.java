@@ -5,14 +5,14 @@ import com.game.snake.ui.MenuPanel;
 
 public class App {
     public static void main(String[] args) {
-        int largura = 700;
-        int altura = largura;
+        int width = 700;
+        int height = width;
 
         JFrame window = new JFrame("Snake Game");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
 
-        MenuPanel menu = new MenuPanel(window, largura, altura);
+        MenuPanel menu = new MenuPanel(window, width, height);
         window.setContentPane(menu);
 
         window.pack();

@@ -8,6 +8,7 @@ public class MenuPanel extends JPanel {
     private final JFrame frame;
     private final int width;
     private final int height;
+
     private JButton startButton;
 
     public MenuPanel(JFrame frame, int width, int height) {
@@ -78,17 +79,17 @@ public class MenuPanel extends JPanel {
         g2.setFont(new Font("Monospaced", Font.BOLD, 70));
         FontMetrics fm = g2.getFontMetrics();
 
-        int x = (width - fm.stringWidth(title)) / 2;
-        int y = height / 2 - 60;
+        int widthx = (width - fm.stringWidth(title)) / 2;
+        int heighty = height / 2 - 60;
 
         g2.setColor(Color.GREEN);
-        g2.drawString(title, x + 2, y + 2);
+        g2.drawString(title, widthx + 2, heighty + 2);
 
         g2.setColor(Color.RED);
-        g2.drawString(title, x, y);
+        g2.drawString(title, widthx, heighty);
 
         g2.setColor(new Color(0, 255, 0));
-        g2.drawString(title, x - 1, y - 1);
+        g2.drawString(title, widthx - 1, heighty - 1);
 
         g2.dispose();
     }

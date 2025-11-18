@@ -1,10 +1,12 @@
 package com.game.snake.core;
 
 public class SpeedController {
+
     private final int baseTps;
     private final int stepTps;
     private final int maxTps;
     private final int fruitsPerStep;
+
     private int currentTps;
     private int fruitsEaten;
 
