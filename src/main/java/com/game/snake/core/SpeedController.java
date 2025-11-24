@@ -1,10 +1,12 @@
 package com.game.snake.core;
 
 public class SpeedController {
+
     private final int baseTps;
     private final int stepTps;
     private final int maxTps;
     private final int fruitsPerStep;
+
     private int currentTps;
     private int fruitsEaten;
 
@@ -20,7 +22,7 @@ public class SpeedController {
     public void onFruitEaten() {
         fruitsEaten++;
         if (fruitsEaten % fruitsPerStep == 0) {
-            currentTps = Math.min(maxTps, currentTps + stepTps);
+            currentTps = Math.min(maxTps, baseTps + (fruitsEaten / fruitsPerStep) * stepTps);
         }
     }
 
