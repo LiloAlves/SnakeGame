@@ -14,7 +14,7 @@ Um projeto inspirado no clássico Snake Game, desenvolvido em Java 17, utilizand
 
 ---
 
-## ▶️ Como Executar
+## ▶ Como Executar
 
 - Via Maven: `mvn exec:java`
 
@@ -93,25 +93,73 @@ _Cache para performance_
 
 _Botão de mute: 🔊 / 🔇_
 
-## 🧩 Arquitetura do Projeto
+## 📐 Arquitetura do Projeto
 
-src/main/java/com/game/snake
-│
-├── app/
-│ └── App.java # Classe principal (main)
-│
-├── core/
-│ ├── GameEngine.java # Lógica do jogo
-│ ├── SoundPlayer.java # Sistema de áudio
-│ ├── SpeedController.java # Lógica de velocidade (TPS)
-│ └── UiConstants.java # Constantes de UI
-│
-├── entities/
-│ ├── Snake.java # Lógica e desenho da cobra
-│ ├── Food.java # Fruta
-│ └── Obstacle.java # Obstáculos com textura
-│
-└── ui/
-├── Game.java # Gerência do GamePanel
-├── GamePanel.java # Render + HUD + botões + teclado
-└── MenuPanel.java # Tela inicial com botão START
+```mermaid
+flowchart TB
+
+%% =======================
+%% Cores personalizadas
+%% =======================
+classDef appColor fill:#fff4c2,stroke:#c2a902,stroke-width:2px,color:#5a4b00;
+classDef coreColor fill:#c2ffe8,stroke:#00a36c,stroke-width:2px,color:#003d26;
+classDef entityColor fill:#ffd3d3,stroke:#cc3d3d,stroke-width:2px,color:#5a0000;
+classDef uiColor fill:#d9d3ff,stroke:#6b4ed1,stroke-width:2px,color:#22165c;
+classDef rootColor fill:#fff,stroke:#7c7c7c,stroke-width:2px,color:#000;
+
+%% =======================
+%% Root Title
+%% =======================
+A["🎮 **Snake Game**<br/>(Java / Swing)"]:::rootColor --> B[com.game.snake]
+
+%% =======================
+%% Pacotes
+%% =======================
+subgraph Packages[ ]
+direction TB
+
+    %% app/
+    subgraph app["📁 app/"]
+    AP["▶️ **App.java**<br/>(Classe principal)"]:::appColor
+    end
+
+    %% core/
+    subgraph core["⚙️ core/"]
+    GE["🧠 GameEngine.java<br/>(Lógica do jogo)"]:::coreColor
+    SP["🔊 SoundPlayer.java<br/>(Sistema de áudio)"]:::coreColor
+    SC["⏱ SpeedController.java<br/>(Controle de TPS)"]:::coreColor
+    UI["📌 UiConstants.java<br/>(Constantes de UI)"]:::coreColor
+    end
+
+    %% entities/
+    subgraph entities["🧩 entities/"]
+    SN["🐍 Snake.java<br/>(Comportamento da cobra)"]:::entityColor
+    FD["🍎 Food.java<br/>(Fruta)"]:::entityColor
+    OB["🧱 Obstacle.java<br/>(Obstáculos)"]:::entityColor
+    end
+
+    %% ui/
+    subgraph ui["🖥️ ui/"]
+    GM["🎮 Game.java<br/>(Gerência do GamePanel)"]:::uiColor
+    GP["🧾 GamePanel.java<br/>(Render + HUD + Input)"]:::uiColor
+    MP["🔰 MenuPanel.java<br/>(Tela inicial)"]:::uiColor
+    end
+
+end
+
+%% =======================
+%% Relações
+%% =======================
+AP --> GE
+GE --> SN
+GE --> FD
+GE --> OB
+
+GE --> GM
+GM --> GP
+GM --> MP
+
+GP --> SN
+GP --> FD
+GP --> OB
+```
